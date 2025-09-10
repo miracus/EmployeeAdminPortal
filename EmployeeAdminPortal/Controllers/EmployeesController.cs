@@ -1,9 +1,10 @@
-﻿using EmployeeAdminPortal.Data;
-using EmployeeAdminPortal.Models;
-using EmployeeAdminPortal.Models.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using EmployeeAdminPortal.Employees;
+using EmployeeAdminPortal.Employees.AddEmployee;
+using EmployeeAdminPortal.Employees.DeleteEmployee;
+using EmployeeAdminPortal.Employees.GetEmployee;
+using EmployeeAdminPortal.Employees.UpdateEmployee;
+using EmployeeAdminPortal.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeAdminPortal.Controllers
 {
@@ -11,97 +12,74 @@ namespace EmployeeAdminPortal.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly ApplicationDbContext dbContext;
+        private readonly IEmployeesService _employeesService;
 
-        public EmployeesController(ApplicationDbContext dbContext)
+        public EmployeesController(IEmployeesService employeesService)
         {
-            this.dbContext = dbContext;
+            _employeesService = employeesService;
         }
 
-        [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(IEnumerable<Employee>))]
-        public IActionResult GetAllEmployees()
+        [HttpPost("add")]
+        [ProducesResponseType(typeof(AddEmployeeResponse), StatusCodes.Status200OK)]
+        public IActionResult AddEmployee([FromBody] AddEmployeeRequest request)
         {
-            return Ok(dbContext.Employees.ToList());
+            var input = AddEmployeeMapper.Map(request);
+            var output = _employeesService.AddEmployee(input);
+            var response = AddEmployeeMapper.Map(output);
+            return Ok(response);
         }
 
-        [HttpGet]
-        [Route("{id:guid}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
-        public IActionResult GetAllEmployeeById(Guid id)
+        [HttpGet("{id:Guid}")]
+        [ProducesResponseType(typeof(UpdateEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetEmployee(Guid id)
         {
-            var employee = dbContext.Employees.Find(id);
+            var input = new GetEmployeeRequest { EmployeeId = id };
+            var mappedInput = GetEmployeeMapper.Map(input);
 
-            if (employee is null)
-            {
-                return NotFound();
-            }
+            var output = _employeesService.GetEmployee(mappedInput);
+            var response = GetEmployeeMapper.Map(output);
 
-            return Ok(employee);
+            return Ok(response);
         }
 
-        [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
-        public IActionResult AddEmploee(AddEmploeeDto addEmploeeDto)
-        {
-            var employeeEntity = new Employee()
-            {
-                Name = addEmploeeDto.Name,
-                Email = addEmploeeDto.Email,
-                Phone = addEmploeeDto.Phone,
-                Salary = addEmploeeDto.Salary
-            };
-
-            dbContext.Employees.Add(employeeEntity);
-            dbContext.SaveChanges();
-
-            return Ok(employeeEntity);
-        }
-
-        [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
-        [Route("{id:guid}")]
-        public IActionResult UpdateEmployee(Guid id, UpdateEmployeeDto updateEmployeeDto)
-        {
-
-            var employee = dbContext.Employees.Find(id);
-
-            if (employee is null)
-            {
-                return NotFound();
-            }
-
-            employee.Name = updateEmployeeDto.Name;
-            employee.Email = updateEmployeeDto.Email;
-            employee.Phone = updateEmployeeDto.Phone;
-            employee.Salary = updateEmployeeDto.Salary;
-
-            dbContext.SaveChanges();
-
-            return Ok(employee);
-
-        }
-
-
-        [HttpDelete]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(Employee))]
-        [Route("{id:guid}")]
+        [HttpDelete("{id:Guid}")]
+        [ProducesResponseType(typeof(DeleteEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteEmployee(Guid id)
         {
+            var input = new DeleteEmployeeRequest { EmployeeId = id };
+            var mappedInput = DeleteEmployeeMapper.Map(input);
 
-            var employee = dbContext.Employees.Find(id);
+            var output = _employeesService.DeleteEmployee(mappedInput);
+            var response = DeleteEmployeeMapper.Map(output);
 
-            if (employee is null)
+            return Ok(response);
+        }
+
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(typeof(UpdateEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult UpdateEmployee(Guid id, [FromBody] UpdateEmployeeRequest request)
+        {
+            request.EmployeeId = id;
+
+            var input = UpdateEmployeeMapper.Map(request);
+
+            if (input == null)
             {
-                return NotFound();
+                return BadRequest();
             }
+                
+            // Викликаємо метод сервісу
+            var output = _employeesService.UpdateEmployee(input);
 
-            dbContext.Employees.Remove(employee);
+            if (!output.Success)
+                return NotFound();
 
-            dbContext.SaveChanges();
+            var response = UpdateEmployeeMapper.Map(output);
 
-            return Ok(employee);
-
+            return Ok(response);
         }
     }
 }
