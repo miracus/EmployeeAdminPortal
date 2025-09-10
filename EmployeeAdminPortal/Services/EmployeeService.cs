@@ -1,4 +1,5 @@
-﻿using EmployeeAdminPortal.Interfaces.Services;
+﻿using EmployeeAdminPortal.Data;
+using EmployeeAdminPortal.Interfaces.Services;
 using EmployeeAdminPortal.Models.Entities;
 using EmployeeAdminPortal.Models.Inputs;
 using EmployeeAdminPortal.Models.Outputs;
@@ -10,7 +11,7 @@ namespace EmployeeAdminPortal.Services
     {
         private readonly DbContext _dbContext;
 
-        public EmployeesService(DbContext dbContext)
+        public EmployeesService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
         }
