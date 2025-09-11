@@ -71,7 +71,6 @@ namespace EmployeeAdminPortal.Controllers
                 return BadRequest();
             }
                 
-            // Викликаємо метод сервісу
             var output = _employeesService.UpdateEmployee(input);
 
             if (!output.Success)

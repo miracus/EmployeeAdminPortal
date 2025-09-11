@@ -12,7 +12,7 @@ namespace EmployeeAdminPortal.Employees.AddEmployee
             {
                 Employee = new Employee
                 {
-                    Name = request.Employee.FirstName + request.Employee.LastName,
+                    Name = request.Employee.FirstName + " " + request.Employee.LastName,
                     Email = request.Employee.Email,
                     IsDeleted = false
                 }

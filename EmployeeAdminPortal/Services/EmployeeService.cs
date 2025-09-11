@@ -28,7 +28,7 @@ namespace EmployeeAdminPortal.Services
         {
             var employee = _dbContext
                 .Set<Employee>()
-                .Where(e => !e.IsDeleted && e.Id == input.EmployeeId)
+                .Where(e => !e.IsDeleted && e.EmployeeId == input.EmployeeId)
                 .FirstOrDefault();
 
             return new GetEmployeeOutput { Employee = employee };
@@ -38,7 +38,7 @@ namespace EmployeeAdminPortal.Services
         {
             var employee = _dbContext
                 .Set<Employee>()
-                .FirstOrDefault(e => e.Id == input.EmployeeId && !e.IsDeleted);
+                .FirstOrDefault(e => e.EmployeeId == input.EmployeeId && !e.IsDeleted);
 
             if (employee == null)
                 return new DeleteEmployeeOutput { Success = false };
@@ -52,7 +52,7 @@ namespace EmployeeAdminPortal.Services
         public UpdateEmployeeOutput UpdateEmployee(UpdateEmployeeInput input)
         {
             var employee = _dbContext.Set<Employee>()
-                .FirstOrDefault(e => e.Id == input.EmployeeId && !e.IsDeleted);
+                .FirstOrDefault(e => e.EmployeeId == input.EmployeeId && !e.IsDeleted);
 
             if (employee == null)
                 return new UpdateEmployeeOutput { Success = false };

@@ -23,7 +23,7 @@ namespace EmployeeAdminPortal.Employees.GetEmployee
             {
                 Employee = new EmployeeDto
                 {
-                    Id = output.Employee.Id,
+                    Id = output.Employee.EmployeeId,
                     Name = output.Employee.Name,
                     Email = output.Employee.Email
                 }
