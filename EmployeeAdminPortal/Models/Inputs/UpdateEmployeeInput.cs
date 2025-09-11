@@ -1,7 +1,10 @@
 ﻿using EmployeeAdminPortal.Models.Entities;
 
-public class UpdateEmployeeInput
+namespace EmployeeAdminPortal.Models.Inputs
 {
-    public Guid EmployeeId { get; set; }
-    public Employee Employee { get; set; } = null!;
+    public class UpdateEmployeeInput
+    {
+        public Guid EmployeeId { get; set; }
+        public Employee Employee { get; set; } = null!;
+    }
 }
