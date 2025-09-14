@@ -1,5 +1,4 @@
 ﻿using EmployeeAdminPortal.Models.Inputs;
-using EmployeeAdminPortal.Models.Outputs;
 
 namespace EmployeeAdminPortal.Employees.DeleteEmployee
 {
@@ -10,14 +9,6 @@ namespace EmployeeAdminPortal.Employees.DeleteEmployee
             return new DeleteEmployeeInput
             {
                 EmployeeId = request.EmployeeId
-            };
-        }
-
-        public static DeleteEmployeeResponse Map(DeleteEmployeeOutput output)
-        {
-            return new DeleteEmployeeResponse
-            {
-                Success = output.Success
             };
         }
     }

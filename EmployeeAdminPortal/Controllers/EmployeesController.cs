@@ -16,69 +16,82 @@ namespace EmployeeAdminPortal.Controllers
 
         public EmployeesController(IEmployeesService employeesService)
         {
-            _employeesService = employeesService;
+            this._employeesService = employeesService;
         }
 
         [HttpPost("add")]
-        [ProducesResponseType(typeof(AddEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult AddEmployee([FromBody] AddEmployeeRequest request)
         {
             var input = AddEmployeeMapper.Map(request);
-            var output = _employeesService.AddEmployee(input);
-            var response = AddEmployeeMapper.Map(output);
-            return Ok(response);
+            var result = this._employeesService.AddEmployee(input);
+
+            if (result.IsFailure)
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+
+            return Ok();
         }
 
         [HttpGet("{id:Guid}")]
-        [ProducesResponseType(typeof(UpdateEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(GetEmployeeResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetEmployee(Guid id)
         {
             var input = new GetEmployeeRequest { EmployeeId = id };
             var mappedInput = GetEmployeeMapper.Map(input);
+            var result = _employeesService.GetEmployee(mappedInput);
 
-            var output = _employeesService.GetEmployee(mappedInput);
-            var response = GetEmployeeMapper.Map(output);
+            if (result.IsFailure)
+            {
+                return NotFound();
+            }
 
+            var response = GetEmployeeMapper.Map(result.Value);
             return Ok(response);
         }
 
         [HttpDelete("{id:Guid}")]
-        [ProducesResponseType(typeof(DeleteEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeleteEmployee(Guid id)
         {
             var input = new DeleteEmployeeRequest { EmployeeId = id };
             var mappedInput = DeleteEmployeeMapper.Map(input);
+            var result = this._employeesService.DeleteEmployee(mappedInput);
 
-            var output = _employeesService.DeleteEmployee(mappedInput);
-            var response = DeleteEmployeeMapper.Map(output);
+            if (result.IsFailure)
+            {
+                return NotFound();
+            }
 
-            return Ok(response);
+            return Ok();
         }
 
         [HttpPut("{id:guid}")]
-        [ProducesResponseType(typeof(UpdateEmployeeResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult UpdateEmployee(Guid id, [FromBody] UpdateEmployeeRequest request)
         {
             request.EmployeeId = id;
-
             var input = UpdateEmployeeMapper.Map(request);
 
             if (input == null)
             {
-                return BadRequest();
+                return BadRequest("Invalid request data.");
             }
-                
-            var output = _employeesService.UpdateEmployee(input);
 
-            if (!output.Success)
+            var result = this._employeesService.UpdateEmployee(input);
+
+            if (result.IsFailure)
+            {
                 return NotFound();
+            }
 
-            var response = UpdateEmployeeMapper.Map(output);
-
-            return Ok(response);
+            return Ok();
         }
     }
 }

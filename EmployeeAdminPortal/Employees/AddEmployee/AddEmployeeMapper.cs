@@ -1,10 +1,11 @@
 ﻿using EmployeeAdminPortal.Models.Entities;
 using EmployeeAdminPortal.Models.Inputs;
-using EmployeeAdminPortal.Models.Outputs;
+using Riok.Mapperly.Abstractions;
 
 namespace EmployeeAdminPortal.Employees.AddEmployee
 {
-    public static class AddEmployeeMapper
+    [Mapper]
+    public partial class AddEmployeeMapper
     {
         public static AddEmployeeInput Map(AddEmployeeRequest request)
         {
@@ -16,14 +17,6 @@ namespace EmployeeAdminPortal.Employees.AddEmployee
                     Email = request.Employee.Email,
                     IsDeleted = false
                 }
-            };
-        }
-
-        public static AddEmployeeResponse Map(AddEmployeeOutput output)
-        {
-            return new AddEmployeeResponse
-            {
-                Success = output.Success
             };
         }
     }
