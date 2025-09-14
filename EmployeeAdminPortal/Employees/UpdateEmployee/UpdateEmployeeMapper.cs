@@ -1,26 +1,15 @@
 ﻿using EmployeeAdminPortal.Models.Entities;
 using EmployeeAdminPortal.Models.Inputs;
+using Riok.Mapperly.Abstractions;
 
 namespace EmployeeAdminPortal.Employees.UpdateEmployee
 {
-    public static class UpdateEmployeeMapper
+    [Mapper]
+    public partial class UpdateEmployeeMapper
     {
-        public static UpdateEmployeeInput? Map(UpdateEmployeeRequest request)
-        {
-            if (request == null || request.Employee == null)
-            {
-                return null;
-            }
-
-            return new UpdateEmployeeInput
-            {
-                Employee = new Employee
-                {
-                    EmployeeId = request.EmployeeId,
-                    Name = request.Employee.Name,
-                    Email = request.Employee.Email
-                }
-            };
-        }
+        [MapProperty(nameof(UpdateEmployeeRequest.EmployeeId), nameof(UpdateEmployeeInput.Employee.EmployeeId))]
+        [MapProperty(nameof(UpdateEmployeeRequest.Employee.Name), nameof(UpdateEmployeeInput.Employee.Name))]
+        [MapProperty(nameof(UpdateEmployeeRequest.Employee.Email), nameof(UpdateEmployeeInput.Employee.Email))]
+        public partial UpdateEmployeeInput Map(UpdateEmployeeRequest request);
     }
 }

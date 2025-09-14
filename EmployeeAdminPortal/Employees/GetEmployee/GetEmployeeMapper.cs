@@ -1,33 +1,15 @@
-﻿using EmployeeAdminPortal.Models.Entities;
-using EmployeeAdminPortal.Models.Inputs;
+﻿using EmployeeAdminPortal.Models.Inputs;
 using EmployeeAdminPortal.Models.Outputs;
+using Riok.Mapperly.Abstractions;
 
 namespace EmployeeAdminPortal.Employees.GetEmployee
 {
-    public static class GetEmployeeMapper
+    [Mapper]
+    public partial class GetEmployeeMapper
     {
-        public static GetEmployeeInput Map(GetEmployeeRequest request)
-        {
-            return new GetEmployeeInput
-            {
-                EmployeeId = request.EmployeeId
-            };
-        }
+        public partial GetEmployeeInput Map(GetEmployeeRequest request);
 
-        public static GetEmployeeResponse Map(GetEmployeeOutput output)
-        {
-            if (output.Employee == null)
-                return new GetEmployeeResponse { Employee = null };
-
-            return new GetEmployeeResponse
-            {
-                Employee = new EmployeeDto
-                {
-                    Id = output.Employee.EmployeeId,
-                    Name = output.Employee.Name,
-                    Email = output.Employee.Email
-                }
-            };
-        }
+        [MapProperty(nameof(GetEmployeeOutput.Employee.EmployeeId), nameof(GetEmployeeResponse.Employee.Id))]
+        public partial GetEmployeeResponse Map(GetEmployeeOutput output);
     }
 }

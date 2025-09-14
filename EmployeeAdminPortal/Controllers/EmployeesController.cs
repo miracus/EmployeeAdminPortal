@@ -13,10 +13,23 @@ namespace EmployeeAdminPortal.Controllers
     public class EmployeesController : ControllerBase
     {
         private readonly IEmployeesService _employeesService;
+        private readonly AddEmployeeMapper _addEmployeeMapper;
+        private readonly GetEmployeeMapper _getEmployeeMapper;
+        private readonly DeleteEmployeeMapper _deleteEmployeeMapper;
+        private readonly UpdateEmployeeMapper _updateEmployeeMapper;
 
-        public EmployeesController(IEmployeesService employeesService)
+        public EmployeesController(
+            IEmployeesService employeesService,
+            AddEmployeeMapper addEmployeeMapper,
+            GetEmployeeMapper getEmployeeMapper,
+            DeleteEmployeeMapper deleteEmployeeMapper,
+            UpdateEmployeeMapper updateEmployeeMapper)
         {
             this._employeesService = employeesService;
+            this._addEmployeeMapper = addEmployeeMapper;
+            this._getEmployeeMapper = getEmployeeMapper;
+            this._deleteEmployeeMapper = deleteEmployeeMapper;
+            this._updateEmployeeMapper = updateEmployeeMapper;
         }
 
         [HttpPost("add")]
@@ -24,7 +37,7 @@ namespace EmployeeAdminPortal.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult AddEmployee([FromBody] AddEmployeeRequest request)
         {
-            var input = AddEmployeeMapper.Map(request);
+            var input = _addEmployeeMapper.Map(request);
             var result = this._employeesService.AddEmployee(input);
 
             if (result.IsFailure)
@@ -41,15 +54,15 @@ namespace EmployeeAdminPortal.Controllers
         public IActionResult GetEmployee(Guid id)
         {
             var input = new GetEmployeeRequest { EmployeeId = id };
-            var mappedInput = GetEmployeeMapper.Map(input);
+            var mappedInput = _getEmployeeMapper.Map(input);
             var result = _employeesService.GetEmployee(mappedInput);
 
-            if (result.IsFailure)
+            if (result.IsFailure || result.Value == null)
             {
                 return NotFound();
             }
 
-            var response = GetEmployeeMapper.Map(result.Value);
+            var response = _getEmployeeMapper.Map(result.Value);
             return Ok(response);
         }
 
@@ -59,7 +72,7 @@ namespace EmployeeAdminPortal.Controllers
         public IActionResult DeleteEmployee(Guid id)
         {
             var input = new DeleteEmployeeRequest { EmployeeId = id };
-            var mappedInput = DeleteEmployeeMapper.Map(input);
+            var mappedInput = _deleteEmployeeMapper.Map(input);
             var result = this._employeesService.DeleteEmployee(mappedInput);
 
             if (result.IsFailure)
@@ -77,7 +90,7 @@ namespace EmployeeAdminPortal.Controllers
         public IActionResult UpdateEmployee(Guid id, [FromBody] UpdateEmployeeRequest request)
         {
             request.EmployeeId = id;
-            var input = UpdateEmployeeMapper.Map(request);
+            var input = _updateEmployeeMapper.Map(request);
 
             if (input == null)
             {

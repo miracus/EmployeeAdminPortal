@@ -1,15 +1,11 @@
 ﻿using EmployeeAdminPortal.Models.Inputs;
+using Riok.Mapperly.Abstractions;
 
 namespace EmployeeAdminPortal.Employees.DeleteEmployee
 {
-    public static class DeleteEmployeeMapper
+    [Mapper]
+    public partial class DeleteEmployeeMapper
     {
-        public static DeleteEmployeeInput Map(DeleteEmployeeRequest request)
-        {
-            return new DeleteEmployeeInput
-            {
-                EmployeeId = request.EmployeeId
-            };
-        }
+        public partial DeleteEmployeeInput Map(DeleteEmployeeRequest request);
     }
 }
