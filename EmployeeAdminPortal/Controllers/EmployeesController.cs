@@ -87,7 +87,7 @@ namespace EmployeeAdminPortal.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateEmployee(Guid id, [FromBody] UpdateEmployeeRequest request)
+        public IActionResult UpdateEmployee(Guid id, UpdateEmployeeRequest request)
         {
             var input = _updateEmployeeMapper.Map(request);
 
