@@ -4,6 +4,6 @@ namespace EmployeeAdminPortal.Models.Inputs
 {
     public class UpdateEmployeeInput
     {
-        public Employee Employee { get; set; } = null!;
+        public Employee Employee { get; set; } = new Employee();
     }
 }

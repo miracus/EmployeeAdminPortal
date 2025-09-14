@@ -56,10 +56,10 @@ namespace EmployeeAdminPortal.Services
             return Result<DeleteEmployeeOutput>.Success(new DeleteEmployeeOutput());
         }
 
-        public Result<UpdateEmployeeOutput> UpdateEmployee(UpdateEmployeeInput input)
+        public Result<UpdateEmployeeOutput> UpdateEmployee(Guid id, UpdateEmployeeInput input)
         {
             var employee = this._dbContext.Set<Employee>()
-                .FirstOrDefault(e => e.EmployeeId == input.Employee.EmployeeId && !e.IsDeleted);
+                .FirstOrDefault(e => e.EmployeeId == id && !e.IsDeleted);
 
             if (employee == null)
             {

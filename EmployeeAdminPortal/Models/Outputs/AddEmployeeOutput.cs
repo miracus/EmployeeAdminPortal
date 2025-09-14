@@ -1,4 +1,6 @@
-﻿namespace EmployeeAdminPortal.Models.Inputs
+﻿using EmployeeAdminPortal.Models.Entities;
+
+namespace EmployeeAdminPortal.Models.Outputs
 {
     public class AddEmployeeOutput
     {

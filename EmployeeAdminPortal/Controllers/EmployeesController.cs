@@ -89,7 +89,6 @@ namespace EmployeeAdminPortal.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult UpdateEmployee(Guid id, [FromBody] UpdateEmployeeRequest request)
         {
-            request.EmployeeId = id;
             var input = _updateEmployeeMapper.Map(request);
 
             if (input == null)
@@ -97,7 +96,7 @@ namespace EmployeeAdminPortal.Controllers
                 return BadRequest("Invalid request data.");
             }
 
-            var result = this._employeesService.UpdateEmployee(input);
+            var result = this._employeesService.UpdateEmployee(id, input);
 
             if (result.IsFailure)
             {
