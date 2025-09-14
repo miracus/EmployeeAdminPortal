@@ -33,7 +33,6 @@ namespace EmployeeAdminPortal.Services
 
             if (employee == null)
             {
-                // Повертаємо Result з помилкою, якщо співробітника не знайдено
                 return Result<GetEmployeeOutput>.Failure("Employee not found.");
             }
 

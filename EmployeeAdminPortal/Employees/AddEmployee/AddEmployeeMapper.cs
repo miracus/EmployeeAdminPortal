@@ -8,6 +8,7 @@ namespace EmployeeAdminPortal.Employees.AddEmployee
     [Mapper]
     public partial class AddEmployeeMapper
     {
+        [MapPropertyFromSource(target: nameof(Employee.EmployeeId), Use = nameof(GetDefaultEmployeeId))]
         [MapPropertyFromSource(target: nameof(Employee.Name), Use = nameof(MapEmployeeFullName))]
         [MapPropertyFromSource(target: nameof(Employee.IsDeleted), Use = nameof(GetIsDeletedValue))]
         [MapPropertyFromSource(target: nameof(Employee.Phone), Use = nameof(GetDefaultPhone))]
@@ -33,6 +34,12 @@ namespace EmployeeAdminPortal.Employees.AddEmployee
         {
             ArgumentNullException.ThrowIfNull(dto);
             return 0;
+        }
+
+        private static Guid GetDefaultEmployeeId(EmployeeDto dto)
+        {
+            ArgumentNullException.ThrowIfNull(dto);
+            return Guid.NewGuid();
         }
     }
 
