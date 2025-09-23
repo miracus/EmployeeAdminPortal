@@ -3,18 +3,21 @@ using EmployeeAdminPortal.Interfaces.Services;
 using EmployeeAdminPortal.Models.Entities;
 using EmployeeAdminPortal.Models.Inputs;
 using EmployeeAdminPortal.Models.Outputs;
+using EmployeeAdminPortal.Services.Validators; // Додаємо using для нового валідатора
 using Microsoft.EntityFrameworkCore;
-using EmployeeAdminPortal.Common; // Додаємо using
+using EmployeeAdminPortal.Common;
 
 namespace EmployeeAdminPortal.Services
 {
     public class EmployeesService : IEmployeesService
     {
-        private readonly DbContext _dbContext;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly EmployeeValidator _employeeValidator;
 
-        public EmployeesService(ApplicationDbContext dbContext)
+        public EmployeesService(ApplicationDbContext dbContext, EmployeeValidator employeeValidator)
         {
             this._dbContext = dbContext;
+            this._employeeValidator = employeeValidator;
         }
 
         public Result<AddEmployeeOutput> AddEmployee(AddEmployeeInput input)

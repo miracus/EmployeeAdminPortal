@@ -4,6 +4,7 @@ using EmployeeAdminPortal.Employees.DeleteEmployee;
 using EmployeeAdminPortal.Employees.GetEmployee;
 using EmployeeAdminPortal.Employees.UpdateEmployee;
 using EmployeeAdminPortal.Interfaces.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeAdminPortal.Controllers
@@ -17,26 +18,36 @@ namespace EmployeeAdminPortal.Controllers
         private readonly GetEmployeeMapper _getEmployeeMapper;
         private readonly DeleteEmployeeMapper _deleteEmployeeMapper;
         private readonly UpdateEmployeeMapper _updateEmployeeMapper;
+        private readonly IValidator<AddEmployeeRequest> _addEmployeeValidator;
 
         public EmployeesController(
             IEmployeesService employeesService,
             AddEmployeeMapper addEmployeeMapper,
             GetEmployeeMapper getEmployeeMapper,
             DeleteEmployeeMapper deleteEmployeeMapper,
-            UpdateEmployeeMapper updateEmployeeMapper)
+            UpdateEmployeeMapper updateEmployeeMapper,
+            IValidator<AddEmployeeRequest> addEmployeeValidator)
         {
             this._employeesService = employeesService;
             this._addEmployeeMapper = addEmployeeMapper;
             this._getEmployeeMapper = getEmployeeMapper;
             this._deleteEmployeeMapper = deleteEmployeeMapper;
             this._updateEmployeeMapper = updateEmployeeMapper;
+            this._addEmployeeValidator = addEmployeeValidator;
         }
 
         [HttpPost("add")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult AddEmployee([FromBody] AddEmployeeRequest request)
+        public async Task<IActionResult> AddEmployee([FromBody] AddEmployeeRequest request)
         {
+            var validationResult = await _addEmployeeValidator.ValidateAsync(request);
+
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(validationResult.Errors);
+            }
+
             var input = _addEmployeeMapper.Map(request);
             var result = this._employeesService.AddEmployee(input);
 
