@@ -3,8 +3,7 @@ using EmployeeAdminPortal.Interfaces.Services;
 using EmployeeAdminPortal.Models.Entities;
 using EmployeeAdminPortal.Models.Inputs;
 using EmployeeAdminPortal.Models.Outputs;
-using EmployeeAdminPortal.Services.Validators; // Додаємо using для нового валідатора
-using Microsoft.EntityFrameworkCore;
+using EmployeeAdminPortal.Services.Validators;
 using EmployeeAdminPortal.Common;
 
 namespace EmployeeAdminPortal.Services
@@ -12,12 +11,10 @@ namespace EmployeeAdminPortal.Services
     public class EmployeesService : IEmployeesService
     {
         private readonly ApplicationDbContext _dbContext;
-        private readonly EmployeeValidator _employeeValidator;
 
         public EmployeesService(ApplicationDbContext dbContext, EmployeeValidator employeeValidator)
         {
             this._dbContext = dbContext;
-            this._employeeValidator = employeeValidator;
         }
 
         public Result<AddEmployeeOutput> AddEmployee(AddEmployeeInput input)
@@ -25,7 +22,12 @@ namespace EmployeeAdminPortal.Services
             this._dbContext.Add(input.Employee);
             this._dbContext.SaveChanges();
 
-            return Result<AddEmployeeOutput>.Success(new AddEmployeeOutput());
+            var newEmployeeId = input.Employee.EmployeeId;
+
+            return Result<AddEmployeeOutput>.Success(new AddEmployeeOutput
+            {
+                EmployeeId = newEmployeeId // Присвоюємо реальний ID
+            });
         }
 
         public Result<GetEmployeeOutput> GetEmployee(GetEmployeeInput input)
@@ -59,10 +61,10 @@ namespace EmployeeAdminPortal.Services
             return Result<DeleteEmployeeOutput>.Success(new DeleteEmployeeOutput());
         }
 
-        public Result<UpdateEmployeeOutput> UpdateEmployee(Guid id, UpdateEmployeeInput input)
+        public Result<UpdateEmployeeOutput> UpdateEmployee(UpdateEmployeeInput input)
         {
             var employee = this._dbContext.Set<Employee>()
-                .FirstOrDefault(e => e.EmployeeId == id && !e.IsDeleted);
+                .FirstOrDefault(e => e.EmployeeId == input.Employee.EmployeeId && !e.IsDeleted);
 
             if (employee == null)
             {

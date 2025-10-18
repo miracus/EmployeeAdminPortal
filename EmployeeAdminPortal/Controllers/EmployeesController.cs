@@ -1,5 +1,4 @@
-﻿using EmployeeAdminPortal.Employees;
-using EmployeeAdminPortal.Employees.AddEmployee;
+﻿using EmployeeAdminPortal.Employees.AddEmployee;
 using EmployeeAdminPortal.Employees.DeleteEmployee;
 using EmployeeAdminPortal.Employees.GetEmployee;
 using EmployeeAdminPortal.Employees.UpdateEmployee;
@@ -13,108 +12,82 @@ namespace EmployeeAdminPortal.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly IEmployeesService _employeesService;
-        private readonly AddEmployeeMapper _addEmployeeMapper;
-        private readonly GetEmployeeMapper _getEmployeeMapper;
-        private readonly DeleteEmployeeMapper _deleteEmployeeMapper;
-        private readonly UpdateEmployeeMapper _updateEmployeeMapper;
-        private readonly IValidator<AddEmployeeRequest> _addEmployeeValidator;
-
-        public EmployeesController(
-            IEmployeesService employeesService,
-            AddEmployeeMapper addEmployeeMapper,
-            GetEmployeeMapper getEmployeeMapper,
-            DeleteEmployeeMapper deleteEmployeeMapper,
-            UpdateEmployeeMapper updateEmployeeMapper,
-            IValidator<AddEmployeeRequest> addEmployeeValidator)
-        {
-            this._employeesService = employeesService;
-            this._addEmployeeMapper = addEmployeeMapper;
-            this._getEmployeeMapper = getEmployeeMapper;
-            this._deleteEmployeeMapper = deleteEmployeeMapper;
-            this._updateEmployeeMapper = updateEmployeeMapper;
-            this._addEmployeeValidator = addEmployeeValidator;
-        }
-
         [HttpPost("add")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> AddEmployee([FromBody] AddEmployeeRequest request)
+        public async Task<IActionResult> AddEmployee(
+            [FromBody] AddEmployeeRequest request,
+            AddEmployeeMapper addEmployeeMapper,
+            IValidator<AddEmployeeRequest> addEmployeeValidator,
+            IEmployeesService employeesService)
         {
-            var validationResult = await _addEmployeeValidator.ValidateAsync(request);
-
+            var validationResult = await addEmployeeValidator.ValidateAsync(request);
             if (!validationResult.IsValid)
-            {
-                return BadRequest(validationResult.Errors);
-            }
+                return this.BadRequest(validationResult.Errors);
 
-            var input = _addEmployeeMapper.Map(request);
-            var result = this._employeesService.AddEmployee(input);
+            var input = addEmployeeMapper.Map(request);
+            var result = employeesService.AddEmployee(input);
 
             if (result.IsFailure)
-            {
-                return BadRequest(result.ErrorMessage);
-            }
+                return this.StatusCode(444, new { ErrorCode = "EmployeeAlreadyExists", Message = result.ErrorMessage });
 
-            return Ok();
+            return this.Ok(result.Value);
         }
 
-        [HttpGet("{id:Guid}")]
+        [HttpGet("{id:guid}")]
         [ProducesResponseType(typeof(GetEmployeeResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult GetEmployee(Guid id)
+        public IActionResult GetEmployee(
+            Guid id,
+            GetEmployeeMapper getEmployeeMapper,
+            IEmployeesService employeesService)
         {
             var input = new GetEmployeeRequest { EmployeeId = id };
-            var mappedInput = _getEmployeeMapper.Map(input);
-            var result = _employeesService.GetEmployee(mappedInput);
+            var mappedInput = getEmployeeMapper.Map(input);
+            var result = employeesService.GetEmployee(mappedInput);
 
             if (result.IsFailure || result.Value == null)
-            {
-                return NotFound();
-            }
+                return this.NotFound();
 
-            var response = _getEmployeeMapper.Map(result.Value);
-            return Ok(response);
+            return this.Ok(result.Value);
         }
 
-        [HttpDelete("{id:Guid}")]
+        [HttpDelete("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public IActionResult DeleteEmployee(Guid id)
+        public IActionResult DeleteEmployee(
+            Guid id,
+            DeleteEmployeeMapper deleteEmployeeMapper,
+            IEmployeesService employeesService)
         {
             var input = new DeleteEmployeeRequest { EmployeeId = id };
-            var mappedInput = _deleteEmployeeMapper.Map(input);
-            var result = this._employeesService.DeleteEmployee(mappedInput);
+            var mappedInput = deleteEmployeeMapper.Map(input);
+            var result = employeesService.DeleteEmployee(mappedInput);
 
             if (result.IsFailure)
-            {
-                return NotFound();
-            }
+                return this.NotFound();
 
-            return Ok();
+            return this.Ok();
         }
 
         [HttpPut("{id:guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult UpdateEmployee(Guid id, UpdateEmployeeRequest request)
+        public IActionResult UpdateEmployee(
+            Guid id,
+            UpdateEmployeeRequest request,
+            UpdateEmployeeMapper updateEmployeeMapper,
+            IEmployeesService employeesService)
         {
-            var input = _updateEmployeeMapper.Map(request);
-
-            if (input == null)
-            {
-                return BadRequest("Invalid request data.");
-            }
-
-            var result = this._employeesService.UpdateEmployee(id, input);
+            var input = updateEmployeeMapper.Map(request);
+            input.Employee.EmployeeId = id;
+            var result = employeesService.UpdateEmployee(input);
 
             if (result.IsFailure)
-            {
-                return NotFound();
-            }
+                return this.NotFound();
 
-            return Ok();
+            return this.Ok();
         }
     }
 }

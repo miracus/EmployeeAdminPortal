@@ -10,12 +10,12 @@ namespace EmployeeAdminPortal.Services.Validators
 
         public EmployeeValidator(ApplicationDbContext dbContext)
         {
-            _dbContext = dbContext;
+            this._dbContext = dbContext;
         }
 
         public async Task<bool> EmployeeExists(Guid employeeId)
         {
-            return await _dbContext.Employees.AnyAsync(e => e.EmployeeId == employeeId && !e.IsDeleted);
+            return await this._dbContext.Employees.AnyAsync(e => e.EmployeeId == employeeId && !e.IsDeleted);
         }
     }
 }

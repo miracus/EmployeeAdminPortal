@@ -13,7 +13,7 @@ namespace EmployeeAdminPortal.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     [Migration("20250830152549_initial migration")]
-    partial class initialmigration
+    partial class Initialmigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

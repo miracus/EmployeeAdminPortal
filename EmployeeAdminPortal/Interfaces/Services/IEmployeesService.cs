@@ -9,6 +9,6 @@ namespace EmployeeAdminPortal.Interfaces.Services
         Result<AddEmployeeOutput> AddEmployee(AddEmployeeInput input);
         Result<GetEmployeeOutput> GetEmployee(GetEmployeeInput input);
         Result<DeleteEmployeeOutput> DeleteEmployee(DeleteEmployeeInput input);
-        Result<UpdateEmployeeOutput> UpdateEmployee(Guid id, UpdateEmployeeInput input);
+        Result<UpdateEmployeeOutput> UpdateEmployee(UpdateEmployeeInput input);
     }
 }

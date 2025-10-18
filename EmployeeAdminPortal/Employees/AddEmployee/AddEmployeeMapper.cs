@@ -5,7 +5,7 @@ using Riok.Mapperly.Abstractions;
 
 namespace EmployeeAdminPortal.Employees.AddEmployee
 {
-    [Mapper]
+    [Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Source)]
     public partial class AddEmployeeMapper
     {
         [MapPropertyFromSource(target: nameof(Employee.EmployeeId), Use = nameof(GetDefaultEmployeeId))]
